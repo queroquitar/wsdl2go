@@ -223,7 +223,11 @@ func (c *Client) RoundTripWithAction(soapAction string, in, out Message) error {
 // RoundTripSoap12 implements the RoundTripper interface for SOAP 1.2.
 func (c *Client) RoundTripSoap12(action string, in, out Message) error {
 	headerFunc := func(r *http.Request) {
-		r.Header.Add("Content-Type", fmt.Sprintf("application/soap+xml; charset=utf-8; action=\"%s\"", action))
+		if c.ContentType != "" {
+			r.Header.Add("Content-Type", fmt.Sprint(c.ContentType))
+		} else {
+			r.Header.Add("Content-Type", fmt.Sprintf("application/soap+xml; charset=utf-8; action=\"%s\"", action))
+		}
 	}
 	return doRoundTrip(c, headerFunc, in, out)
 }
